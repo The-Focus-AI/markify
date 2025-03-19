@@ -13,4 +13,4 @@ WORKDIR /app
 ENV PORT=8080
 COPY --from=builder /app/.venv .venv/
 COPY . .
-CMD ["/app/.venv/bin/flask", "run", "--host=0.0.0.0", "--port=${PORT}"]
+CMD ["/app/.venv/bin/flask", "run", "--host=0.0.0.0"]
