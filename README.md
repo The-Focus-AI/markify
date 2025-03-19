@@ -44,10 +44,12 @@ markify
 Send a POST request to `/tomarkdown` with a JSON body containing a URL:
 
 ```bash
-curl -X POST http://localhost:5000/tomarkdown \
+curl -X POST http://localhost:${PORT:-5001}/tomarkdown \
   -H "Content-Type: application/json" \
   -d '{"url": "https://example.com"}'
 ```
+
+The server runs on port 5001 by default, but this can be configured by setting the `PORT` environment variable. In the Docker container, it runs on port 8080.
 
 ### Response Format
 
