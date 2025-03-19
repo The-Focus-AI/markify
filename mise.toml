@@ -1,0 +1,77 @@
+[tools]
+python = "latest"
+uv = "latest"
+
+[settings]
+python.uv_venv_auto = true
+
+[env]
+# Use the project name derived from the current directory
+PROJECT_NAME = "{{ config_root | basename }}"
+
+# Automatic virtualenv activation
+_.python.venv = { path = ".venv", create = true }
+
+[tasks.info]
+description = "Print project information"
+run = '''
+echo "Project: $PROJECT_NAME"
+echo "Virtual Environment: $VIRTUAL_ENV"
+echo "Python Version: $(python --version)"
+'''
+
+[tasks.install]
+description = "Install dependencies"
+alias = "i"
+run = "uv pip install -e ."
+
+[tasks.setup-dev]
+description = "Set up development environment with uv"
+run = '''
+uv venv .venv
+uv pip install -e ".[dev]"
+'''
+
+[tasks.dev]
+description = "Run the development server"
+run = '''
+cd {{ config_root }}
+uv pip install -e .
+PYTHONPATH={{ config_root }} python -m markify.app
+'''
+
+[tasks.test]
+description = "Run tests"
+run = "pytest"
+
+[tasks.format]
+description = "Format code using black and isort"
+run = '''
+black .
+isort .
+'''
+
+[tasks.lint]
+description = "Run linters"
+run = '''
+flake8 .
+black --check .
+isort --check-only .
+'''
+
+[tasks.clean]
+description = "Clean up build artifacts"
+run = '''
+rm -rf build/
+rm -rf dist/
+rm -rf *.egg-info/
+find . -type d -name "__pycache__" -exec rm -rf {} +
+'''
+
+[tasks.build]
+description = "Build the package"
+run = "python -m build"
+
+[tasks.publish]
+description = "Publish to PyPI (requires twine)"
+run = "twine upload dist/*"
