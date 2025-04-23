@@ -97,6 +97,7 @@ def create_app():
             
             <div class="container">
                 <h2>API Usage</h2>
+                <h3>Convert from URL</h3>
                 <p>Send a POST request to <code>/tomarkdown</code> with a JSON body containing a URL:</p>
                 <pre>curl -X POST http://localhost:5001/tomarkdown \
   -H "Content-Type: application/json" \
@@ -104,6 +105,12 @@ def create_app():
                 
                 <p>Or use GET request with a URL parameter:</p>
                 <pre>curl "http://localhost:5001/tomarkdown?url=https://example.com"</pre>
+
+                <h3>Convert HTML Directly</h3>
+                <p>Send a POST request to <code>/html2markdown</code> with raw HTML content in the request body:</p>
+                <pre>curl -X POST http://localhost:5001/html2markdown \
+  -H "Content-Type: text/html" \
+  -d '&lt;h1&gt;Hello World&lt;/h1&gt;&lt;p&gt;This is a test&lt;/p&gt;'</pre>
             </div>
 
             <div class="container">
@@ -129,6 +136,19 @@ def create_app():
         
         try:
             markdown_text = to_markdown(url)
+            return markdown_text
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    @app.route('/html2markdown', methods=['POST'])
+    def html_to_markdown():
+        """API endpoint to convert HTML directly to markdown."""
+        if not request.data:
+            return jsonify({"error": "HTML content is required in request body"}), 400
+        
+        try:
+            html_content = request.data.decode('utf-8')
+            markdown_text = md(html_content)
             return markdown_text
         except Exception as e:
             return jsonify({"error": str(e)}), 500
